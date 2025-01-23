@@ -1,11 +1,35 @@
-import React, { useState } from 'react';
-import { assets } from '../assets/assets';
+import React, { useState } from "react";
+import { assets } from "../assets/assets";
 
-const Header = () => {
+const Header = ({ addAppointment }) => {
   const [showModal, setShowModal] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    date: "",
+    speciality: "general",
+  });
 
   const toggleModal = () => {
     setShowModal(!showModal);
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const newAppointment = {
+      id: Date.now(), // Generate a unique ID
+      doctor: `Mr. ${formData.name}`, // Corrected string interpolation
+      specialty: formData.speciality.charAt(0).toUpperCase() + formData.speciality.slice(1),
+      time: formData.date,
+      status: "Booked",
+    };
+    addAppointment(newAppointment);
+    setShowModal(false);
   };
 
   return (
@@ -48,7 +72,7 @@ const Header = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg w-[90%] max-w-lg">
             <h2 className="text-xl font-semibold mb-4">Book an Appointment</h2>
-            <form>
+            <form onSubmit={handleSubmit}>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1" htmlFor="name">
                   Name
@@ -56,8 +80,11 @@ const Header = () => {
                 <input
                   type="text"
                   id="name"
+                  name="name"
                   className="w-full border rounded p-2"
                   placeholder="Enter your name"
+                  value={formData.name}
+                  onChange={handleChange}
                 />
               </div>
               <div className="mb-4">
@@ -67,8 +94,11 @@ const Header = () => {
                 <input
                   type="email"
                   id="email"
+                  name="email"
                   className="w-full border rounded p-2"
                   placeholder="Enter your email"
+                  value={formData.email}
+                  onChange={handleChange}
                 />
               </div>
               <div className="mb-4">
@@ -78,14 +108,23 @@ const Header = () => {
                 <input
                   type="date"
                   id="date"
+                  name="date"
                   className="w-full border rounded p-2"
+                  value={formData.date}
+                  onChange={handleChange}
                 />
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium mb-1" htmlFor="speciality">
                   Speciality
                 </label>
-                <select id="speciality" className="w-full border rounded p-2">
+                <select
+                  id="speciality"
+                  name="speciality"
+                  className="w-full border rounded p-2"
+                  value={formData.speciality}
+                  onChange={handleChange}
+                >
                   <option value="general">General Physician</option>
                   <option value="gynecologist">Gynecologist</option>
                   <option value="dermatologist">Dermatologist</option>
